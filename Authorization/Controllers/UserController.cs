@@ -52,8 +52,8 @@ namespace Authorization.Controllers
         {
 
             User? existingUser = await db.Users.FirstOrDefaultAsync(x => x.email == loginModel.email);
-            if (existingUser != null)
-                return Unauthorized("User not verifed");
+            if (existingUser == null)
+                return Unauthorized("User not registred");
 
 
             if (!existingUser.verified)

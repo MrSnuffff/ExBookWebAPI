@@ -15,7 +15,6 @@ public partial class Userbook
 
     public string? description { get; set; }
 
-
     [ForeignKey("book_id")]
     public virtual Book? Book { get; set; }
 

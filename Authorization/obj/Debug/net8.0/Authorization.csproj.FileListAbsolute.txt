@@ -46,3 +46,4 @@ C:\Users\GURGEN\source\repos\ExBookWebAPI\Authorization\bin\Debug\net8.0\Microso
 C:\Users\GURGEN\source\repos\ExBookWebAPI\Authorization\bin\Debug\net8.0\Microsoft.Extensions.DependencyModel.dll
 C:\Users\GURGEN\source\repos\ExBookWebAPI\Authorization\bin\Debug\net8.0\Mono.TextTemplating.dll
 C:\Users\GURGEN\source\repos\ExBookWebAPI\Authorization\bin\Debug\net8.0\System.CodeDom.dll
+C:\Users\GURGEN\source\repos\ExBookWebAPI\Authorization\obj\Debug\net8.0\Authorization.sourcelink.json

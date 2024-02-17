@@ -12,7 +12,7 @@
 
         public string phone_number { get; set; } = null!;
 
-        public int? coins { get; }
+        public int? coins { get; set; }
 
         public int? country_id { get; set; }
     }

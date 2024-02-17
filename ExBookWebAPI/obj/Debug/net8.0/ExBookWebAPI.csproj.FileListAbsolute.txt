@@ -46,3 +46,4 @@ C:\Users\GURGEN\source\repos\ExBookWebAPI\ExBookWebAPI\bin\Debug\net8.0\System.C
 C:\Users\GURGEN\source\repos\ExBookWebAPI\ExBookWebAPI\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\GURGEN\source\repos\ExBookWebAPI\ExBookWebAPI\bin\Debug\net8.0\MySqlConnector.dll
 C:\Users\GURGEN\source\repos\ExBookWebAPI\ExBookWebAPI\bin\Debug\net8.0\Pomelo.EntityFrameworkCore.MySql.dll
+C:\Users\GURGEN\source\repos\ExBookWebAPI\ExBookWebAPI\obj\Debug\net8.0\ExBookWebAPI.sourcelink.json

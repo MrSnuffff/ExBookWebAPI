@@ -19,8 +19,8 @@ namespace ExBookWebAPI.Controllers
         }
         //ok
         [HttpPost]
-        [Route("AddUserBookViaIsbnAndDb")] 
-        public async Task<ActionResult<string>> AddUserBookViaIsbnAndDb( string isbn, string description)
+        [Route("AddUserBookViaIsbnAndDb")]
+        public async Task<ActionResult<string>> AddUserBookViaIsbnAndDb(string isbn, string description)
         {
             if (isbn != null)
                 isbn = isbn.Replace("-", "");
@@ -46,7 +46,7 @@ namespace ExBookWebAPI.Controllers
             if (isbn != null)
                 isbn = isbn.Replace("-", "");
 
-            if (db.Books.Any(x => x.isbn == isbn ))
+            if (db.Books.Any(x => x.isbn == isbn))
             {
                 return Conflict("Book already exists");
             }
