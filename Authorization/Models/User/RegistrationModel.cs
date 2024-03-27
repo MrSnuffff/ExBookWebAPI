@@ -13,8 +13,6 @@ namespace Authorization.Models.User
 
         public string email { get; set; } = null!;
 
-        public int? country_id { get; set; }
-
         public string phone_number { get; set; } = null!;
 
         public string passwordHash { get; set; } = null!;

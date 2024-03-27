@@ -5,6 +5,7 @@ using Authorization.Data;
 using Authorization.Models;
 using Authorization.Security;
 using Authorization.Models.User;
+using Authorization.Models.UserModels;
 
 
 namespace Authorization.Controllers
@@ -26,19 +27,19 @@ namespace Authorization.Controllers
         [Route("LoginViaUsername")]
         public async Task<ActionResult<string>> LoginViaUsername(LoginModelViaUsername loginModel)
         {
-            
+
             User? existingUser = await db.Users.FirstOrDefaultAsync(x => x.username == loginModel.username);
-            if (existingUser != null)
+            if (existingUser == null)
                 return Unauthorized("User not found");
 
             if (!existingUser.verified)
                 return BadRequest("User not verifed");
-            
+
             string _passwordHash = PasswordHash.HashPassword(loginModel.passwordHash);
 
             if (existingUser.passwordHash == _passwordHash)
             {
-                var (accessToken, refreshToken) = AuthenticationTokenManager.GenerateTokens(existingUser.username, existingUser.email, existingUser.phone_number);
+                var (accessToken, refreshToken) = AuthenticationTokenManager.GenerateTokens(existingUser.username, existingUser.email, existingUser.phone_number, existingUser.user_id.ToString());
 
                 return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
             }
@@ -63,7 +64,7 @@ namespace Authorization.Controllers
 
             if (existingUser.passwordHash == _passwordHash)
             {
-                var (accessToken, refreshToken) = AuthenticationTokenManager.GenerateTokens(existingUser.username, existingUser.email, existingUser.phone_number);
+                var (accessToken, refreshToken) = AuthenticationTokenManager.GenerateTokens(existingUser.username, existingUser.email, existingUser.phone_number, existingUser.user_id.ToString());
 
                 return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
             }
@@ -75,7 +76,7 @@ namespace Authorization.Controllers
         [Route("Registration")]
         public async Task<ActionResult<string>> RegistrationAsync(RegistrationModel registrationModel)
         {
-            if (db.Users.Any(x => x.username == registrationModel.username || x.email == registrationModel.email ))
+            if (db.Users.Any(x => x.username == registrationModel.username || x.email == registrationModel.email))
             {
                 return BadRequest("User already exists");
             }
@@ -86,7 +87,6 @@ namespace Authorization.Controllers
             {
                 username = registrationModel.username,
                 passwordHash = registrationModel.passwordHash,
-                country_id = registrationModel.country_id,
                 first_name = registrationModel.first_name,
                 last_name = registrationModel.last_name,
                 email = registrationModel.email,
@@ -95,7 +95,6 @@ namespace Authorization.Controllers
             db.Users.Add(user);
 
             await db.SaveChangesAsync();
-            var (accessToken, refreshToken) = AuthenticationTokenManager.GenerateTokens(registrationModel.username, registrationModel.email, registrationModel.phone_number);
 
             return Ok();
         }
@@ -113,35 +112,44 @@ namespace Authorization.Controllers
             string? username = principal.FindFirst(ClaimTypes.Name)?.Value;
             string? email = principal.FindFirst(ClaimTypes.Email)?.Value;
             string? phone_number = principal.FindFirst(ClaimTypes.MobilePhone)?.Value;
+            int user_id = Convert.ToInt32(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            var (newAccessToken, _) = AuthenticationTokenManager.GenerateTokens(username, email, phone_number);
+            var (newAccessToken, _) = AuthenticationTokenManager.GenerateTokens(username, email, phone_number, user_id.ToString());
 
             return Ok(new { AccessToken = newAccessToken });
         }
 
         [HttpPost]
         [Route("SendVerifyCode")]
-        public async Task SendVerifyCode(string email)
+        public async Task<ActionResult<string>> SendVerifyCode(EmailModel emailModel)
         {
-            await _sendVerifyCode.SendCodeAsync(email);
+            User? user = await db.Users.FirstOrDefaultAsync(x => x.email == emailModel.email);
+            if (user == null)
+                return BadRequest();
+            if(user.verified == false)
+                await _sendVerifyCode.SendCodeAsync(emailModel.email);
+            return Ok();
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("CheckVerifyCode")]
-        public async Task<ActionResult<string>> CheckVerifyCode(string email, string code)
-        { 
-            User? user = await db.Users.FirstOrDefaultAsync(x => x.email == email);
+        public async Task<ActionResult<string>> CheckVerifyCode(ConfirmEmail confirmEmail)
+        {
+            User? user = await db.Users.FirstOrDefaultAsync(x => x.email == confirmEmail.email);
             VerificationCodes? verificationCodes = await db.VerificationCodes.FirstOrDefaultAsync(x => x.user_id == user.user_id);
-            if (verificationCodes == null || verificationCodes.CreatedAt > DateTime.Now.AddMinutes(5) || verificationCodes.VerificationCode != code)
+            if (verificationCodes == null || verificationCodes.CreatedAt > DateTime.Now.AddMinutes(5) || verificationCodes.VerificationCode != confirmEmail.confirmCode)
                 return BadRequest();
 
             user.verified = true;
+            if (verificationCodes != null)
+                db.VerificationCodes.Remove(verificationCodes);
 
             await db.SaveChangesAsync();
 
-            var (accessToken, refreshToken) = AuthenticationTokenManager.GenerateTokens(user.username, user.email, user.phone_number);
+            var (accessToken, refreshToken) = AuthenticationTokenManager.GenerateTokens(user.username, user.email, user.phone_number, user.user_id.ToString());
 
             return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
         }
+
     }
 }

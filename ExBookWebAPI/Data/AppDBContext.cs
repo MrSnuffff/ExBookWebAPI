@@ -13,7 +13,6 @@ namespace ExBookWebAPI.Data
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Userbook> Userbooks { get; set; }
         public DbSet<Language> Languages { get; set; }
-        public DbSet<Country> Countries { get; set; }
         public DbSet<Message> Messages { get; set; }    
     }
 }

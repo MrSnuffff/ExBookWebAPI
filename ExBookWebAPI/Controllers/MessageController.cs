@@ -20,16 +20,23 @@ namespace ExBookWebAPI.Controllers
         [Route("SendMessage")]
         public async Task<ActionResult> SendMessage(Message message)
         {
-            string? username = HttpContext.Items["Username"] as string;
-
-            User? user = await db.Users.FirstOrDefaultAsync(x => x.username == username);
-            message.sender_id = user.user_id;
+            int user_id = (int)HttpContext.Items["User_id"];
+            message.sender_id = user_id;
             db.Messages.Add(message);
             db.SaveChanges();
-
             return Ok();
         }
 
-        
+        [HttpGet]
+        [Route("NotificationCheck")]
+        public async Task<ActionResult<IEnumerable<Message>>> NotificationCheck()
+        {
+
+            int user_id = (int)HttpContext.Items["User_id"];
+            var messages = await db.Messages
+                .Where(x => x.sender_id == user_id || x.recipient_id == user_id)
+                .ToListAsync();
+            return messages;
+        }
     }
 }

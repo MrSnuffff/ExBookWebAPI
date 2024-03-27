@@ -15,7 +15,7 @@ namespace Authorization.Models.User
         public string phone_number { get; set; } = null!;
 
         public int? coins { get; }
+        public byte[]? photo { get; set; }
 
-        public int? country_id { get; set; }
     }
 }

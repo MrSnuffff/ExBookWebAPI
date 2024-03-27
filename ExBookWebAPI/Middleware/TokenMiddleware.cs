@@ -22,9 +22,15 @@ namespace ExBookWebAPI.Middlware
             }
             else
             {
-                string username = userClaim?.FindFirst(ClaimTypes.Name)?.Value;
-
+                string? username = userClaim?.FindFirst(ClaimTypes.Name)?.Value;
+                int user_id = Convert.ToInt32( userClaim?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                string id = userClaim?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                string? email = userClaim?.FindFirst(ClaimTypes.Email)?.Value;
+                //string? phoneNumber = userClaim?.FindFirst(ClaimTypes.MobilePhone).Value;
                 context.Items["Username"] = username;
+                context.Items["User_id"] = user_id;
+                context.Items["Email"] = email;
+
                 await _next.Invoke(context);
             }
         }

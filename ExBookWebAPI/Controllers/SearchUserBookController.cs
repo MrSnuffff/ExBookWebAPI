@@ -17,7 +17,7 @@ namespace ExBookWebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserbooks")]
+        [Route("Getbooks")]
         public async Task<ActionResult<IEnumerable<Userbook>>> GetUserbooks(uint page = 1, uint pageSize = 20, string isbn = null, string title = null)
         {
             IQueryable<Userbook> query = db.Userbooks.OrderBy(ub => ub.userbook_id);
@@ -29,13 +29,12 @@ namespace ExBookWebAPI.Controllers
                 query = query.Where(ub => ub.Book.title.Contains(title));
             
 
-            var userbooks = await query
+            var books = await query
                 .Skip((int)((page - 1) * pageSize))
                 .Take((int)pageSize)
                 .ToListAsync();
 
-            return userbooks;
+            return books;
         }
-
     }
 }

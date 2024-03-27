@@ -11,16 +11,17 @@ namespace ExBookWebAPI.Security
         private const int AccessTokenExpirationMinutes = 60 * 24; // 1 day
         private const int RefreshTokenExpirationMinutes = 60 * 24 * 30; // 30 days
 
-        public static (string accessToken, string refreshToken) GenerateTokens(string username, string email, string phone_number)
+        public static (string accessToken, string refreshToken) GenerateTokens(string username, string email, string phone_number, int user_id)
         {
             var symmetricKey = Encoding.UTF8.GetBytes(Secret);
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var claims = new ClaimsIdentity(new[]
             {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Email, email),
-            new Claim(ClaimTypes.MobilePhone, phone_number)
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.MobilePhone, phone_number),
+                new Claim(ClaimTypes.NameIdentifier, user_id.ToString())
             });
             var accessTokenDescriptor = new SecurityTokenDescriptor
             {

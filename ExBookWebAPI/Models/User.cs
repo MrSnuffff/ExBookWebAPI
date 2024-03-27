@@ -21,9 +21,9 @@ public partial class User
 
     public int? coins { get; set; }
 
-    public int? country_id { get; set; }
-
     public string passwordHash { get; set; } = null!;
 
     public bool verified { get; set; }
+
+    public byte[]? photo { get; set; }
 }

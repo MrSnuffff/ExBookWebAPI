@@ -29,10 +29,19 @@ namespace Authorization.Controllers
                 last_name = user.last_name,
                 email = user.email,
                 phone_number = user.phone_number,
-                coins = user.coins,
-                country_id = user.country_id
+                coins = user.coins
             };
             return Ok(profileModel);
+        }
+        public async Task<IActionResult> AddUserPhoto(PhotoModel photoModel)
+        {
+            string? username = HttpContext.Items["Username"] as string;
+
+            User? user = await db.Users.FirstOrDefaultAsync(x => x.username == username);
+            user.photo = photoModel.photo;
+            db.Update(user);
+            await db.SaveChangesAsync();
+            return Ok();
         }
     }
 }

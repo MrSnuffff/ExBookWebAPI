@@ -24,13 +24,13 @@ namespace ExBookWebAPI.Controllers
         {
             if (isbn != null)
                 isbn = isbn.Replace("-", "");
-            string username = HttpContext.Items["Username"] as string;
 
-            User? user = await db.Users.FirstOrDefaultAsync(x => x.username == username);
+            int user_id = (int)HttpContext.Items["User_id"];
+
             Book? existingBook = await db.Books.FirstOrDefaultAsync(x => x.isbn == isbn);
             if (existingBook != null)
             {
-                Userbook userbook = new Userbook { user_id = user.user_id, book_id = existingBook.book_id, description = description };
+                Userbook userbook = new Userbook { user_id = user_id, book_id = existingBook.book_id, description = description };
                 db.Userbooks.Add(userbook);
                 await db.SaveChangesAsync();
                 return Ok();
@@ -50,14 +50,14 @@ namespace ExBookWebAPI.Controllers
             {
                 return Conflict("Book already exists");
             }
-            string username = HttpContext.Items["Username"] as string;
 
-            User? user = await db.Users.FirstOrDefaultAsync(x => x.username == username);
+            int user_id = (int)HttpContext.Items["User_id"];
+
             Book? BookFromAnotherApi = await _searchInOtherAPIs.SearchBookAsync(isbn);
             if (BookFromAnotherApi != null)
             {
 
-                Userbook userbook = new Userbook { user_id = user.user_id, Book = BookFromAnotherApi, description = description };
+                Userbook userbook = new Userbook { user_id = user_id, Book = BookFromAnotherApi, description = description };
                 db.Userbooks.Add(userbook);
 
                 await db.SaveChangesAsync();
@@ -74,13 +74,12 @@ namespace ExBookWebAPI.Controllers
         public async Task<ActionResult<string>> AddUserBookViaTitleAndDb(string title, string description)
         {
 
-            string username = HttpContext.Items["Username"] as string;
+            int user_id = (int)HttpContext.Items["User_id"];
 
-            User? user = await db.Users.FirstOrDefaultAsync(x => x.username == username);
             Book? Book = await db.Books.FirstOrDefaultAsync(x => x.title == title);
             if (Book != null)
             {
-                Userbook userbook = new Userbook { user_id = user.user_id, book_id = Book.book_id, description = description };
+                Userbook userbook = new Userbook { user_id = user_id, book_id = Book.book_id, description = description };
                 db.Userbooks.Add(userbook);
                 await db.SaveChangesAsync();
                 return Ok();
@@ -101,10 +100,9 @@ namespace ExBookWebAPI.Controllers
             if (userbook.Book.isbn != null)
                 userbook.Book.isbn = userbook.Book.isbn.Replace("-", "");
 
-            string username = HttpContext.Items["Username"] as string;
+            int user_id = (int)HttpContext.Items["User_id"];
 
-            User? user = await db.Users.FirstOrDefaultAsync(x => x.username == username);
-            userbook.user_id = user.user_id;
+            userbook.user_id = user_id;
             db.Userbooks.Add(userbook);
             await db.SaveChangesAsync();
             return Ok();
@@ -116,12 +114,10 @@ namespace ExBookWebAPI.Controllers
         public async Task<ActionResult<IEnumerable<Book>>> GetAllUserBooks()
         {
 
-            string username = HttpContext.Items["Username"] as string;
-
-            User? user = await db.Users.FirstOrDefaultAsync(x => x.username == username);
+            int user_id = (int)HttpContext.Items["User_id"];
 
             List<int> book_ids = await db.Userbooks
-                   .Where(ub => ub.user_id == user.user_id)
+                   .Where(ub => ub.user_id == user_id)
                    .Select(ub => ub.book_id)
                    .ToListAsync();
 
